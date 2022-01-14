@@ -1,0 +1,17 @@
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<VBox fx:controller="client.Controller"
+          xmlns:fx="http://javafx.com/fxml" alignment="center">
+
+    <stylesheets>
+        <URL value="@/css/style.css"/>
+    </stylesheets>
+    <TextArea fx:id="textArea" prefWidth="500" VBox.vgrow="ALWAYS"/>
+    <HBox>
+        <TextField fx:id="textField" HBox.hgrow="ALWAYS" promptText="input text" onAction="#clickBtnSendText"/>
+        <Button text="Send text" onAction="#clickBtnSendText"/>
+    </HBox>
+</VBox>
