@@ -42,7 +42,8 @@ public class Controller implements Initializable{
                         if (str.equals("/end")) {
                             break;
                         }
-                        System.out.println("Server: " + str);
+                        textArea.appendText(str + "\n");
+                        //System.out.println("Server: " + str);
                     }
                 }catch (IOException e){
                     e.printStackTrace();
@@ -61,9 +62,14 @@ public class Controller implements Initializable{
 
     @FXML
     public void clickBtnSendText(ActionEvent actionEvent) {
-        
-        textArea.appendText(textField.getText() + "\n");
-        textField.clear();
-        textField.requestFocus();
+        if(textField.getText().length()>0){
+            try {
+                out.writeUTF(textField.getText());
+                textField.clear();
+                textField.requestFocus();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

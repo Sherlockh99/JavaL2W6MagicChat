@@ -29,7 +29,6 @@ public class Server {
                 if (str.equals("/end")){
                     break;
                 }
-                System.out.println("Client: " + str);
                 out.writeUTF("ECHO: " + str);
             }
         }catch(IOException e){
