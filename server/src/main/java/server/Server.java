@@ -1,5 +1,7 @@
 package server;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
@@ -10,8 +12,8 @@ public class Server {
     private static ServerSocket server;
     private static Socket socket;
     private static final int PORT = 8189;
-    private static Scanner sc;
-    private static PrintWriter out;
+    private static DataInputStream in;
+    private static DataOutputStream out;
 
     public static void main(String[] args) {
         try (ServerSocket serverSocket = server = new ServerSocket(PORT)) {
@@ -19,16 +21,16 @@ public class Server {
             socket = server.accept();
             System.out.println("Client connected!");
 
-            sc = new Scanner(socket.getInputStream());
-            out = new PrintWriter(socket.getOutputStream(),true); //сразу отправляет
+            in = new DataInputStream(socket.getInputStream());
+            out = new DataOutputStream(socket.getOutputStream());
 
             while (true){
-                String str = sc.nextLine();
+                String str = in.readUTF();
                 if (str.equals("/end")){
                     break;
                 }
                 System.out.println("Client: " + str);
-                out.println("ECHO: " + str);
+                out.writeUTF("ECHO: " + str);
             }
         }catch(IOException e){
             e.printStackTrace();
