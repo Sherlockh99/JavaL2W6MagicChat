@@ -3,20 +3,27 @@ package server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Server {
     private static ServerSocket server;
     private static Socket socket;
     private static final int PORT = 8189;
 
+    private List<ClientHandler> clients;
+
     public Server(){
-        try (ServerSocket serverSocket = server = new ServerSocket(PORT)) {
+
+        clients = new CopyOnWriteArrayList<>();
+
+        try (ServerSocket server = new ServerSocket(PORT)) {
             System.out.println("Server started!");
 
             while (true){
                socket = server.accept();
                System.out.println("Client connected: " + socket.getRemoteSocketAddress());
-               new ClientHandler(this,socket);
+               clients.add(new ClientHandler(this,socket));
             }
 
         }catch(IOException e){
@@ -29,5 +36,11 @@ public class Server {
                 e.printStackTrace();
             }
         };
+    }
+
+    public void broadcastMsg(String msg){
+        for (ClientHandler client : clients) {
+            client.sendMsg(msg);
+        }
     }
 }

@@ -24,7 +24,8 @@ public class ClientHandler {
                         if (str.equals("/end")) {
                             break;
                         }
-                        out.writeUTF(str);
+                        //sendMsg(str);
+                        server.broadcastMsg(str);
                     }
                 }catch (IOException e){
                     e.printStackTrace();
@@ -38,6 +39,14 @@ public class ClientHandler {
                 }
             }).start();
         }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void sendMsg(String msg){
+        try {
+            out.writeUTF(msg);
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
