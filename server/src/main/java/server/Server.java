@@ -56,6 +56,15 @@ public class Server {
         }
     }
 
+    public void privateMsg(ClientHandler sender, String nickName, String msg){
+        String message = String.format("[ %s ]: %s", sender.getNickName(),msg);
+        for (ClientHandler client : clients) {
+            if(nickName.equals(client.getNickName()) || (sender==client)){
+                client.sendMsg(message);
+            }
+        }
+    }
+
     public AuthService getAuthService() {
         return authService;
     }
