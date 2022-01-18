@@ -56,6 +56,9 @@ public class Controller implements Initializable{
         }
 
         setTitle(nickname);
+
+        textArea.clear();
+        
     }
 
     @Override
