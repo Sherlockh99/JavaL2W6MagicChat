@@ -56,13 +56,19 @@ public class Server {
         }
     }
 
-    public void privateMsg(ClientHandler sender, String nickName, String msg){
-        String message = String.format("[ %s ]: %s", sender.getNickName(),msg);
+    public void privateMsg(ClientHandler sender, String receiver, String msg){
+        String message = String.format("[ %s ] to [ %s ] : %s", sender.getNickName(), receiver, msg);
         for (ClientHandler client : clients) {
-            if(nickName.equals(client.getNickName()) || (sender==client)){
+            //if(receiver.equals(client.getNickName()) || (sender==client)){
+            if(receiver.equals(client.getNickName())){
                 client.sendMsg(message);
+                if(!sender.getNickName().equals(receiver)){
+                    sender.sendMsg(message);
+                }
+                return;
             }
         }
+        sender.sendMsg("not found user: " + receiver);
     }
 
     public AuthService getAuthService() {
