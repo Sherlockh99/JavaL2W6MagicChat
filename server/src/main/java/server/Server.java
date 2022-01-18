@@ -71,6 +71,15 @@ public class Server {
         sender.sendMsg("not found user: " + receiver);
     }
 
+    public boolean isLoginAuthenticated(String login){
+        for(ClientHandler c: clients){
+            if(c.getLogin().equals(login)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public AuthService getAuthService() {
         return authService;
     }

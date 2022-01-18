@@ -12,6 +12,7 @@ public class ClientHandler {
     private DataOutputStream out;
     private boolean authenticated;
     private String nickName;
+    private String login;
 
     public ClientHandler(Server server, Socket socket) {
         this.server = server;
@@ -35,13 +36,18 @@ public class ClientHandler {
                                 continue;
                             }
                             String newNick = server.getAuthService().getNicknameByLoginAndPassword(token[1],token[2]);
+                            login = token[1];
                             if(newNick!=null){
-                                authenticated = true;
-                                nickName = newNick;
-                                sendMsg("/authok " + nickName);
-                                server.subscribe(this);
-                                System.out.println("Client: " + nickName + " authenticated");
-                                break;
+                                if(!server.isLoginAuthenticated(login)){
+                                    authenticated = true;
+                                    nickName = newNick;
+                                    sendMsg("/authok " + nickName);
+                                    server.subscribe(this);
+                                    System.out.println("Client: " + nickName + " authenticated");
+                                    break;
+                                } else{
+                                    sendMsg("Под этим логином уже зашли в чат");
+                                }
                             }else {
                                 sendMsg("Неверный логин / пароль");
                             }
@@ -94,5 +100,9 @@ public class ClientHandler {
 
     public String getNickName() {
         return nickName;
+    }
+
+    public String getLogin() {
+        return login;
     }
 }
