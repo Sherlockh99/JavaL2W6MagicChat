@@ -5,6 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -32,6 +33,9 @@ public class Controller implements Initializable{
     public HBox authPanel;
     @FXML
     public HBox msgPanel;
+    @FXML
+    public ListView<String> clientList;
+
 
     private Socket socket;
     private DataInputStream in;
@@ -50,15 +54,15 @@ public class Controller implements Initializable{
         authPanel.setManaged(!authenticated);
         msgPanel.setVisible(authenticated);
         msgPanel.setManaged(authenticated);
+        clientList.setVisible(authenticated);
+        clientList.setManaged(authenticated);
 
         if(!authenticated){
             nickname = "";
         }
-
         setTitle(nickname);
-
         textArea.clear();
-        
+
     }
 
     @Override
@@ -109,12 +113,26 @@ public class Controller implements Initializable{
                     //цикл работы
                     while (authenticated) {
                         String str = in.readUTF();
+                        if (str.startsWith("/")) {
 
-                        if (str.equals("/end")) {
-                            setAuthenticated(false);
-                            break;
+                            if (str.equals("/end")) {
+                                setAuthenticated(false);
+                                break;
+                            }
+
+                            if (str.startsWith("/clientList")) {
+                                String[] token = str.split(" ");
+                                Platform.runLater(() -> {
+                                    clientList.getItems().clear();
+                                    for (int i = 1; i < token.length; i++) {
+                                        clientList.getItems().add(token[i]);
+                                    }
+                                });
+                            }
+
+                       }else{
+                            textArea.appendText(str + "\n");
                         }
-                        textArea.appendText(str + "\n");
                     }
 
                 }catch (IOException e){
