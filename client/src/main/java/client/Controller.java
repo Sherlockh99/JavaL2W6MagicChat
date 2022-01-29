@@ -2,17 +2,20 @@ package client;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
+import javafx.stage.StageStyle;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -48,6 +51,8 @@ public class Controller implements Initializable{
     private boolean authenticated;
     private String nickname;
     private Stage stage;
+    private Stage regStage;
+    private RegController regController;
 
     public void setAuthenticated(boolean authenticated) {
         this.authenticated = authenticated;
@@ -101,11 +106,15 @@ public class Controller implements Initializable{
                             if (str.equals("/end")) {
                                 break;
                             }
-                            if (str.startsWith("/authok"));
-                            nickname = str.split(" ")[1];
-                            setAuthenticated(true);
-                            break;
-                        }else {
+                            if (str.startsWith("/authok")){
+                                nickname = str.split(" ")[1];
+                                setAuthenticated(true);
+                                break;
+                            }
+                            if(str.startsWith("/reg")){
+                                regController.regStatus(str);
+                            }
+                        }else{
                             textArea.appendText(str+"\n");
                         }
                         //textArea.appendText(str + "\n");
@@ -192,8 +201,50 @@ public class Controller implements Initializable{
         //this.nickname = nickName;
     }
 
+    @FXML
     public void clickClientList(MouseEvent mouseEvent) {
         String receiver = clientList.getSelectionModel().getSelectedItem();
         textField.setText("/w " + receiver + " ");
+    }
+
+    @FXML
+    public void clickBtnReg(ActionEvent actionEvent) {
+        if(regStage == null){
+            createRegWindow();
+        }
+        regStage.show();
+    }
+
+    private void createRegWindow(){
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/reg.fxml"));
+            Parent root = fxmlLoader.load();
+            regStage = new Stage();
+            regStage.setTitle("Magic chat registration");
+            regStage.setScene(new Scene(root, 500, 425));
+
+            regStage.initModality(Modality.APPLICATION_MODAL);
+            regStage.initStyle(StageStyle.UTILITY);
+
+            regController = fxmlLoader.getController();
+            regController.setController(this);
+
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void tryToReg(String login, String password, String nickname){
+        if(socket==null || socket.isClosed()){
+            connect();
+        }
+        String msg = String.format("/reg %s %s %s", login, password, nickname);
+        try{
+            out.writeUTF(msg);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+        //System.out.printf("%s %s %s \n", login, password, nickname);
     }
 }

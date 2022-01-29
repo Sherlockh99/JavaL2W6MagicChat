@@ -52,6 +52,17 @@ public class ClientHandler {
                                 sendMsg("Неверный логин / пароль");
                             }
                         }
+                        if(str.startsWith("/reg")) {
+                            String[] token = str.split(" ",4);
+                            if(token.length<4){
+                                continue;
+                            }
+                            if(server.getAuthService().registration(token[1],token[2],token[3])){
+                                sendMsg("/reg_ok");
+                            }else{
+                                sendMsg("/reg_no");
+                            }
+                        }
                     }
 
                     //цикл работы
