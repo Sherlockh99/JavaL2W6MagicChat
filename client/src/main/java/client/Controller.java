@@ -16,6 +16,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import service.ServiceMessages;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -106,7 +107,7 @@ public class Controller implements Initializable{
                             if (str.equals("/end")) {
                                 break;
                             }
-                            if (str.startsWith("/authok")){
+                            if (str.startsWith(ServiceMessages.AUTH_OK)){
                                 nickname = str.split(" ")[1];
                                 setAuthenticated(true);
                                 break;
@@ -117,10 +118,8 @@ public class Controller implements Initializable{
                         }else{
                             textArea.appendText(str+"\n");
                         }
-                        //textArea.appendText(str + "\n");
                     }
 
-                    //цикл работы
                     while (authenticated) {
                         String str = in.readUTF();
                         if (str.startsWith("/")) {
@@ -180,7 +179,7 @@ public class Controller implements Initializable{
         }
 
         try {
-            String msg = String.format("/auth %s %s",loginField.getText().trim(),passwordField.getText().trim());
+            String msg = String.format("%s %s %s", ServiceMessages.AUTH, loginField.getText().trim(),passwordField.getText().trim());
             out.writeUTF(msg);
             passwordField.clear();
         } catch (IOException e) {
@@ -198,13 +197,12 @@ public class Controller implements Initializable{
         Platform.runLater(() -> {
             stage.setTitle(title);
         });
-        //this.nickname = nickName;
     }
 
     @FXML
     public void clickClientList(MouseEvent mouseEvent) {
         String receiver = clientList.getSelectionModel().getSelectedItem();
-        textField.setText("/w " + receiver + " ");
+        textField.setText(ServiceMessages.PRIVATE_MESSAGE + " " + receiver + " ");
     }
 
     @FXML
@@ -244,7 +242,5 @@ public class Controller implements Initializable{
         }catch (IOException e){
             e.printStackTrace();
         }
-
-        //System.out.printf("%s %s %s \n", login, password, nickname);
     }
 }

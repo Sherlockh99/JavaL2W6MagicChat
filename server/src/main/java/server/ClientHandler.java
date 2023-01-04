@@ -1,5 +1,7 @@
 package server;
 
+import service.ServiceMessages;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -22,7 +24,7 @@ public class ClientHandler {
             out = new DataOutputStream(socket.getOutputStream());
             new Thread(() -> {
                 try {
-
+                    socket.setSoTimeout(120000);
                     //цикл аутентификации
                     while (true) {
                         String str = in.readUTF();
@@ -30,7 +32,8 @@ public class ClientHandler {
                             sendMsg("/end");
                             break;
                         }
-                        if(str.startsWith("/auth")) {
+                        //if(str.startsWith("/auth")) {
+                        if(str.startsWith(ServiceMessages.AUTH)) {
                             String[] token = str.split(" ",3);
                             if(token.length<3){
                                 continue;
@@ -41,15 +44,15 @@ public class ClientHandler {
                                 if(!server.isLoginAuthenticated(login)){
                                     authenticated = true;
                                     nickName = newNick;
-                                    sendMsg("/authok " + nickName);
+                                    sendMsg(ServiceMessages.AUTH_OK + " " + nickName);
                                     server.subscribe(this);
                                     System.out.println("Client: " + nickName + " authenticated");
                                     break;
                                 } else{
-                                    sendMsg("Под этим логином уже зашли в чат");
+                                    sendMsg("Already logged into the chat with this username");
                                 }
                             }else {
-                                sendMsg("Неверный логин / пароль");
+                                sendMsg("Incorrect login or password");
                             }
                         }
                         if(str.startsWith("/reg")) {
@@ -65,6 +68,10 @@ public class ClientHandler {
                         }
                     }
 
+                    if(authenticated){
+                        socket.setSoTimeout(0);
+                    }
+
                     //цикл работы
                     while (authenticated) {
                         String str = in.readUTF();
@@ -73,7 +80,7 @@ public class ClientHandler {
                                 sendMsg("/end");
                                 break;
                             }
-                            if(str.startsWith("/w")) {
+                            if(str.startsWith(ServiceMessages.PRIVATE_MESSAGE)) {
                                 String[] token = str.split(" ",3);
                                 if(token.length<3){
                                     continue;

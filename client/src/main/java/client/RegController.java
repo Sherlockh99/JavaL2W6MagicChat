@@ -34,9 +34,9 @@ public class RegController {
 
     public void regStatus(String result){
         if(result.startsWith("/reg_ok")){
-            textArea.appendText("Регистрация прошла успешно \n");
+            textArea.appendText("registration completed successfully \n");
         }else{
-            textArea.appendText("Логин или никнейм уже используется \n");
+            textArea.appendText("Username or nickname already in use \n");
         }
     }
 }
